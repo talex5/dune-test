@@ -1,0 +1,5 @@
+(executable
+  (name myprog)
+  (ocamlc_flags -linkall)
+  (ocamlopt_flags -linkall)
+  (libraries dynlink lwt.unix))

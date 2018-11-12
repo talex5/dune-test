@@ -1,0 +1,27 @@
+(library
+ (name        plugin)
+ (optional)
+ ; (ocamlopt_flags :standard (:include gtk_archives.sexp))
+ (libraries   lablgtk2 lwt_glib))
+
+(rule
+  (targets gtk_archives.sexp)
+  (action
+    (with-stdout-to %{targets}
+      (run ocamlfind query -r lablgtk2,lwt_glib -format "\"%+a\"" -predicates native -prefix "(" -suffix ")"
+    ))
+  ))
+
+(rule
+  (targets real_plugin.cmxs)
+  (deps plugin.cmxa)
+  (action (run ocamlfind ocamlopt
+                  -shared
+                  -linkall
+                  -linkpkg
+                  -dontlink lwt.unix
+                  -thread
+                  -package lablgtk2,lwt_glib
+                  %{deps}
+                  -o %{targets}
+  )))
